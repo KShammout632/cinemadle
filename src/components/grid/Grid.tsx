@@ -7,7 +7,6 @@ type Props = {
 }
 
 export const Grid = ({ guesses }: Props) => {
-  console.log(guesses)
   const empties =
     guesses.length < MAX_CHALLENGES
       ? Array.from(Array(MAX_CHALLENGES - guesses.length))

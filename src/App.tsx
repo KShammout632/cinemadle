@@ -1,46 +1,28 @@
-import { useState, useEffect, useRef } from 'react'
-import { Grid } from './components/grid/Grid'
+import { useEffect, useState } from 'react'
+import './App.css'
+import { AlertContainer } from './components/alerts/AlertContainer'
 import { FilmInput } from './components/filmInput/FilmInput'
+import { FrameContainer } from './components/frameContainer/FrameContainer'
+import { Grid } from './components/grid/Grid'
 import { InfoModal } from './components/modals/InfoModal'
-import { StatsModal } from './components/modals/StatsModal'
 import { SettingsModal } from './components/modals/SettingsModal'
+import { StatsModal } from './components/modals/StatsModal'
+import { Navbar } from './components/navbar/Navbar'
+import { MAX_CHALLENGES, WELCOME_INFO_MODAL_MS } from './constants/settings'
 import {
-  WIN_MESSAGES,
-  GAME_COPIED_MESSAGE,
-  NOT_ENOUGH_LETTERS_MESSAGE,
-  WORD_NOT_FOUND_MESSAGE,
   CORRECT_WORD_MESSAGE,
-  HARD_MODE_ALERT_MESSAGE,
+  GAME_COPIED_MESSAGE,
+  WIN_MESSAGES,
 } from './constants/strings'
+import { useAlert } from './context/AlertContext'
 import {
-  MAX_WORD_LENGTH,
-  MAX_CHALLENGES,
-  REVEAL_TIME_MS,
-  GAME_LOST_INFO_DELAY,
-  WELCOME_INFO_MODAL_MS,
-} from './constants/settings'
-import {
-  isWordInWordList,
-  isWinningWord,
-  solution,
-  findFirstUnusedReveal,
-  unicodeLength,
-  getCleanedSolution,
-} from './lib/words'
-import { addStatsForCompletedGame, loadStats } from './lib/stats'
-import {
+  getStoredIsHighContrastMode,
   loadGameStateFromLocalStorage,
   saveGameStateToLocalStorage,
   setStoredIsHighContrastMode,
-  getStoredIsHighContrastMode,
 } from './lib/localStorage'
-import { default as GraphemeSplitter } from 'grapheme-splitter'
-
-import './App.css'
-import { AlertContainer } from './components/alerts/AlertContainer'
-import { useAlert } from './context/AlertContext'
-import { Navbar } from './components/navbar/Navbar'
-import { FrameContainer } from './components/frameContainer/FrameContainer'
+import { addStatsForCompletedGame, loadStats } from './lib/stats'
+import { getCleanedSolution, isWinningWord, solution } from './lib/words'
 
 function App() {
   const prefersDarkMode = window.matchMedia(
@@ -54,7 +36,6 @@ function App() {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const [currentRowClass, setCurrentRowClass] = useState('')
   const [isGameLost, setIsGameLost] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(
     localStorage.getItem('theme')
@@ -87,12 +68,6 @@ function App() {
 
   const [stats, setStats] = useState(() => loadStats())
 
-  const [isHardMode, setIsHardMode] = useState(
-    localStorage.getItem('gameMode')
-      ? localStorage.getItem('gameMode') === 'hard'
-      : false
-  )
-
   useEffect(() => {
     // if no game state on load,
     // show the user the how-to info modal
@@ -122,22 +97,9 @@ function App() {
     localStorage.setItem('theme', isDark ? 'dark' : 'light')
   }
 
-  const handleHardMode = (isHard: boolean) => {
-    if (guesses.length === 0 || localStorage.getItem('gameMode') === 'hard') {
-      setIsHardMode(isHard)
-      localStorage.setItem('gameMode', isHard ? 'hard' : 'normal')
-    } else {
-      showErrorAlert(HARD_MODE_ALERT_MESSAGE)
-    }
-  }
-
   const handleHighContrastMode = (isHighContrast: boolean) => {
     setIsHighContrastMode(isHighContrast)
     setStoredIsHighContrastMode(isHighContrast)
-  }
-
-  const clearCurrentRowClass = () => {
-    setCurrentRowClass('')
   }
 
   useEffect(() => {
@@ -223,7 +185,6 @@ function App() {
           isGameLost={isGameLost}
           isGameWon={isGameWon}
           handleShareToClipboard={() => showSuccessAlert(GAME_COPIED_MESSAGE)}
-          isHardMode={isHardMode}
           isDarkMode={isDarkMode}
           isHighContrastMode={isHighContrastMode}
           numberOfGuessesMade={guesses.length}
@@ -231,8 +192,6 @@ function App() {
         <SettingsModal
           isOpen={isSettingsModalOpen}
           handleClose={() => setIsSettingsModalOpen(false)}
-          isHardMode={isHardMode}
-          handleHardMode={handleHardMode}
           isDarkMode={isDarkMode}
           handleDarkMode={handleDarkMode}
           isHighContrastMode={isHighContrastMode}

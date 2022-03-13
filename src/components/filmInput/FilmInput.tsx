@@ -30,9 +30,7 @@ export const FilmInput = ({
   }
 
   const onSuggestionsFetchRequested = ({ value }: any) => {
-    console.log(value)
     setSuggestions(getSuggestions(value))
-    console.log(getSuggestions(value))
   }
 
   // Autosuggest will call this function every time you need to clear suggestions.
