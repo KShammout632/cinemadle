@@ -1,4 +1,4 @@
-import { WORDS } from '../constants/wordlist'
+import { FILMS } from '../constants/filmlist'
 import { VALID_GUESSES } from '../constants/validGuesses'
 import { WRONG_SPOT_MESSAGE, NOT_CONTAINED_MESSAGE } from '../constants/strings'
 import { getGuessStatuses } from './statuses'
@@ -6,13 +6,24 @@ import { default as GraphemeSplitter } from 'grapheme-splitter'
 
 export const isWordInWordList = (word: string) => {
   return (
-    WORDS.includes(localeAwareLowerCase(word)) ||
+    FILMS.includes(localeAwareLowerCase(word)) ||
     VALID_GUESSES.includes(localeAwareLowerCase(word))
   )
 }
 
+export const cleanWord = (word: string) => {
+  return word
+    .toLowerCase()
+    .replaceAll(/[^a-zA-Z ]/g, '')
+    .replaceAll(' ', '_')
+}
+
 export const isWinningWord = (word: string) => {
-  return solution === word
+  return cleanWord(solution) === cleanWord(word)
+}
+
+export const getCleanedSolution = () => {
+  return cleanWord(solution)
 }
 
 // build a set of previously revealed letters - present and correct
@@ -30,7 +41,7 @@ export const findFirstUnusedReveal = (word: string, guesses: string[]) => {
   const splitGuess = unicodeSplit(guess)
 
   for (let i = 0; i < splitGuess.length; i++) {
-    if (statuses[i] === 'correct' || statuses[i] === 'present') {
+    if (statuses[i] === 'correct' || statuses[i] === 'incorrect') {
       lettersLeftArray.push(splitGuess[i])
     }
     if (statuses[i] === 'correct' && splitWord[i] !== splitGuess[i]) {
@@ -83,7 +94,7 @@ export const getWordOfDay = () => {
   const nextday = (index + 1) * msInDay + epochMs
 
   return {
-    solution: localeAwareUpperCase(WORDS[index % WORDS.length]),
+    solution: localeAwareUpperCase(FILMS[index % FILMS.length]),
     solutionIndex: index,
     tomorrow: nextday,
   }

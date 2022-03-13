@@ -1,40 +1,32 @@
 import { MAX_CHALLENGES } from '../../constants/settings'
-import { CompletedRow } from './CompletedRow'
-import { CurrentRow } from './CurrentRow'
-import { EmptyRow } from './EmptyRow'
+import { isWinningWord } from '../../lib/words'
+import { Cell } from './Cell'
 
 type Props = {
   guesses: string[]
-  currentGuess: string
-  isRevealing?: boolean
-  currentRowClassName: string
 }
 
-export const Grid = ({
-  guesses,
-  currentGuess,
-  isRevealing,
-  currentRowClassName,
-}: Props) => {
+export const Grid = ({ guesses }: Props) => {
+  console.log(guesses)
   const empties =
-    guesses.length < MAX_CHALLENGES - 1
-      ? Array.from(Array(MAX_CHALLENGES - 1 - guesses.length))
+    guesses.length < MAX_CHALLENGES
+      ? Array.from(Array(MAX_CHALLENGES - guesses.length))
       : []
 
   return (
     <>
-      {guesses.map((guess, i) => (
-        <CompletedRow
-          key={i}
-          guess={guess}
-          isRevealing={isRevealing && guesses.length - 1 === i}
-        />
-      ))}
-      {guesses.length < MAX_CHALLENGES && (
-        <CurrentRow guess={currentGuess} className={currentRowClassName} />
-      )}
+      <div>
+        {guesses.map((guess, index) => (
+          <Cell
+            key={index}
+            value={guess}
+            status={isWinningWord(guess) ? 'correct' : 'incorrect'}
+            isCompleted
+          />
+        ))}
+      </div>
       {empties.map((_, i) => (
-        <EmptyRow key={i} />
+        <Cell key={i} />
       ))}
     </>
   )

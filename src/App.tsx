@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Grid } from './components/grid/Grid'
-import { Keyboard } from './components/keyboard/Keyboard'
+import { FilmInput } from './components/filmInput/FilmInput'
 import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { SettingsModal } from './components/modals/SettingsModal'
@@ -25,6 +25,7 @@ import {
   solution,
   findFirstUnusedReveal,
   unicodeLength,
+  getCleanedSolution,
 } from './lib/words'
 import { addStatsForCompletedGame, loadStats } from './lib/stats'
 import {
@@ -39,6 +40,7 @@ import './App.css'
 import { AlertContainer } from './components/alerts/AlertContainer'
 import { useAlert } from './context/AlertContext'
 import { Navbar } from './components/navbar/Navbar'
+import { FrameContainer } from './components/frameContainer/FrameContainer'
 
 function App() {
   const prefersDarkMode = window.matchMedia(
@@ -64,23 +66,23 @@ function App() {
   const [isHighContrastMode, setIsHighContrastMode] = useState(
     getStoredIsHighContrastMode()
   )
-  const [isRevealing, setIsRevealing] = useState(false)
   const [guesses, setGuesses] = useState<string[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded?.solution !== solution) {
       return []
     }
-    const gameWasWon = loaded.guesses.includes(solution)
-    if (gameWasWon) {
-      setIsGameWon(true)
-    }
-    if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
-      setIsGameLost(true)
-      showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
-        persist: true,
-      })
-    }
-    return loaded.guesses
+    return []
+    // const gameWasWon = loaded.guesses.includes(solution)
+    // if (gameWasWon) {
+    //   setIsGameWon(true)
+    // }
+    // if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
+    //   setIsGameLost(true)
+    //   showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
+    //     persist: true,
+    //   })
+    // }
+    // return loaded.guesses
   })
 
   const [stats, setStats] = useState(() => loadStats())
@@ -146,81 +148,25 @@ function App() {
     if (isGameWon) {
       const winMessage =
         WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
-      const delayMs = REVEAL_TIME_MS * MAX_WORD_LENGTH
 
       showSuccessAlert(winMessage, {
-        delayMs,
         onClose: () => setIsStatsModalOpen(true),
       })
     }
 
     if (isGameLost) {
-      setTimeout(() => {
-        setIsStatsModalOpen(true)
-      }, GAME_LOST_INFO_DELAY)
+      setIsStatsModalOpen(true)
     }
   }, [isGameWon, isGameLost, showSuccessAlert])
-
-  const onChar = (value: string) => {
-    if (
-      unicodeLength(`${currentGuess}${value}`) <= MAX_WORD_LENGTH &&
-      guesses.length < MAX_CHALLENGES &&
-      !isGameWon
-    ) {
-      setCurrentGuess(`${currentGuess}${value}`)
-    }
-  }
-
-  const onDelete = () => {
-    setCurrentGuess(
-      new GraphemeSplitter().splitGraphemes(currentGuess).slice(0, -1).join('')
-    )
-  }
 
   const onEnter = () => {
     if (isGameWon || isGameLost) {
       return
     }
 
-    if (!(unicodeLength(currentGuess) === MAX_WORD_LENGTH)) {
-      setCurrentRowClass('jiggle')
-      return showErrorAlert(NOT_ENOUGH_LETTERS_MESSAGE, {
-        onClose: clearCurrentRowClass,
-      })
-    }
-
-    if (!isWordInWordList(currentGuess)) {
-      setCurrentRowClass('jiggle')
-      return showErrorAlert(WORD_NOT_FOUND_MESSAGE, {
-        onClose: clearCurrentRowClass,
-      })
-    }
-
-    // enforce hard mode - all guesses must contain all previously revealed letters
-    if (isHardMode) {
-      const firstMissingReveal = findFirstUnusedReveal(currentGuess, guesses)
-      if (firstMissingReveal) {
-        setCurrentRowClass('jiggle')
-        return showErrorAlert(firstMissingReveal, {
-          onClose: clearCurrentRowClass,
-        })
-      }
-    }
-
-    setIsRevealing(true)
-    // turn this back off after all
-    // chars have been revealed
-    setTimeout(() => {
-      setIsRevealing(false)
-    }, REVEAL_TIME_MS * MAX_WORD_LENGTH)
-
     const winningWord = isWinningWord(currentGuess)
 
-    if (
-      unicodeLength(currentGuess) === MAX_WORD_LENGTH &&
-      guesses.length < MAX_CHALLENGES &&
-      !isGameWon
-    ) {
+    if (guesses.length < MAX_CHALLENGES && !isGameWon) {
       setGuesses([...guesses, currentGuess])
       setCurrentGuess('')
 
@@ -234,11 +180,12 @@ function App() {
         setIsGameLost(true)
         showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
           persist: true,
-          delayMs: REVEAL_TIME_MS * MAX_WORD_LENGTH + 1,
         })
       }
     }
   }
+
+  const filmTitle = getCleanedSolution()
 
   return (
     <div className="h-screen flex flex-col">
@@ -247,21 +194,22 @@ function App() {
         setIsStatsModalOpen={setIsStatsModalOpen}
         setIsSettingsModalOpen={setIsSettingsModalOpen}
       />
-      <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
-        <div className="pb-6 grow">
-          <Grid
-            guesses={guesses}
-            currentGuess={currentGuess}
-            isRevealing={isRevealing}
-            currentRowClassName={currentRowClass}
+      <div className="pt-2 px-1 pb-8 md:max-w-7xl w-2/3 mx-auto sm:px-6 lg:px-8 flex flex-col grow">
+        {filmTitle ? (
+          <FrameContainer
+            isFinished={isGameWon || isGameLost}
+            title={filmTitle}
+            numGuesses={guesses.length}
           />
+        ) : null}
+        <div className="pb-6 grow">
+          <Grid guesses={guesses} />
         </div>
-        <Keyboard
-          onChar={onChar}
-          onDelete={onDelete}
+        <FilmInput
+          darkMode={isDarkMode}
           onEnter={onEnter}
-          guesses={guesses}
-          isRevealing={isRevealing}
+          currentGuess={currentGuess}
+          setCurrentGuess={setCurrentGuess}
         />
         <InfoModal
           isOpen={isInfoModalOpen}

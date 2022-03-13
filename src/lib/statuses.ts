@@ -1,6 +1,6 @@
 import { solution, unicodeSplit } from './words'
 
-export type CharStatus = 'absent' | 'present' | 'correct'
+export type CharStatus = 'absent' | 'incorrect' | 'correct'
 
 export const getStatuses = (
   guesses: string[]
@@ -20,10 +20,10 @@ export const getStatuses = (
         return (charObj[letter] = 'correct')
       }
 
-      if (charObj[letter] !== 'correct') {
-        //make status present
-        return (charObj[letter] = 'present')
-      }
+      // if (charObj[letter] !== 'correct') {
+      //   //make status present
+      //   return (charObj[letter] = 'present')
+      // }
     })
   })
 
@@ -62,7 +62,7 @@ export const getGuessStatuses = (guess: string): CharStatus[] => {
     )
 
     if (indexOfPresentChar > -1) {
-      statuses[i] = 'present'
+      // statuses[i] = 'present'
       solutionCharsTaken[indexOfPresentChar] = true
       return
     } else {
