@@ -1,6 +1,6 @@
 # Cinemadle
 
-This project is forked off the clone Wordle project Reactle. Made using React, Typescript, and Tailwind.
+This project is forked off the Wordle clone project Reactle. Made using React, Typescript, and Tailwind.
 
 [**Try it out!**](https://cinemadle.com/)
 
