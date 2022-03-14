@@ -38,6 +38,11 @@ export const FilmInput = ({
     setSuggestions([])
   }
 
+  const onSkip = () => {
+    setCurrentGuess('')
+    onEnter()
+  }
+
   return (
     <>
       <Autosuggest
@@ -68,14 +73,24 @@ export const FilmInput = ({
           </div>
         )}
       />
-      <button
-        className="flex items-center justify-center border-2 uppercase my-0.5 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-slate-800 dark:active:bg-slate-700"
-        onClick={onEnter}
-      >
-        <span className={`ml-1 ${darkMode ? 'text-white' : 'text-black'}`}>
-          {'Guess'}
-        </span>
-      </button>
+      <div className="flex flex-row w-full">
+        <button
+          className="flex items-center justify-center w-1/2 border-2 uppercase my-0.5 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-slate-800 dark:active:bg-slate-700"
+          onClick={onSkip}
+        >
+          <span className={`ml-1 ${darkMode ? 'text-white' : 'text-black'}`}>
+            {'Skip'}
+          </span>
+        </button>
+        <button
+          className="flex items-center justify-center w-1/2 border-2 uppercase my-0.5 hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-slate-800 dark:active:bg-slate-700"
+          onClick={onEnter}
+        >
+          <span className={`ml-1 ${darkMode ? 'text-white' : 'text-black'}`}>
+            {'Guess'}
+          </span>
+        </button>
+      </div>
     </>
   )
 }

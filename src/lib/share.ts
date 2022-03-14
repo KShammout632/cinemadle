@@ -20,7 +20,8 @@ export const shareStatus = (
     `${GAME_TITLE} ${solutionIndex} ${
       lost ? 'X' : guesses.length
     }/${MAX_CHALLENGES}\n` +
-    generateEmojiGrid(guesses, getEmojiTiles(isDarkMode))
+    generateEmojiGrid(guesses, getEmojiTiles(isDarkMode)) +
+    '\nhttps://cinemadle.com/'
 
   const shareData = { text: textToShare }
 
@@ -55,7 +56,7 @@ export const generateEmojiGrid = (guesses: string[], tiles: string[]) => {
           return tiles[2]
       }
     })
-    .join('\n')
+    .join('')
 }
 
 const attemptShare = (shareData: object) => {

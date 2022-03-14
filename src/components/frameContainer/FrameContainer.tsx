@@ -1,6 +1,7 @@
 import 'react-slideshow-image/dist/styles.css'
 import { Slide } from 'react-slideshow-image'
 import { useEffect, useRef } from 'react'
+import { MAX_CHALLENGES } from '../../constants/settings'
 type Props = {
   title: string
   numGuesses: number
@@ -13,17 +14,24 @@ export const FrameContainer = ({ title, numGuesses, isFinished }: Props) => {
   useEffect(() => {
     if (slideRef.current && !isFinished) {
       // @ts-ignore
-      slideRef.current.goTo(numGuesses)
+      slideRef.current.goTo(Math.min(numGuesses, MAX_CHALLENGES - 1))
     }
   }, [numGuesses, isFinished])
 
   const frames: string[] = []
-  for (let i = 0; i <= numGuesses; i++) {
+  for (let i = 0; i <= Math.min(numGuesses, MAX_CHALLENGES - 1); i++) {
     frames.push(`film-frames/${title}/${i}.jpg`)
+  }
+
+  if (isFinished) {
+    frames.length = 0
+    for (let i = 0; i <= MAX_CHALLENGES - 1; i++) {
+      frames.push(`film-frames/${title}/${i}.jpg`)
+    }
   }
   return (
     <>
-      <div className="slide-container">
+      <div className="slide-container mb-1">
         <Slide ref={slideRef} infinite={false} autoplay={false}>
           {frames.map((frame, index) => (
             <div

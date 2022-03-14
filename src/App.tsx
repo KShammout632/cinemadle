@@ -22,7 +22,12 @@ import {
   setStoredIsHighContrastMode,
 } from './lib/localStorage'
 import { addStatsForCompletedGame, loadStats } from './lib/stats'
-import { getCleanedSolution, isWinningWord, solution } from './lib/words'
+import {
+  cleanWord,
+  getCleanedSolution,
+  isWinningWord,
+  solution,
+} from './lib/words'
 
 function App() {
   const prefersDarkMode = window.matchMedia(
@@ -52,18 +57,19 @@ function App() {
     if (loaded?.solution !== solution) {
       return []
     }
-    return []
-    // const gameWasWon = loaded.guesses.includes(solution)
-    // if (gameWasWon) {
-    //   setIsGameWon(true)
-    // }
-    // if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
-    //   setIsGameLost(true)
-    //   showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
-    //     persist: true,
-    //   })
-    // }
-    // return loaded.guesses
+    const gameWasWon = loaded.guesses
+      .map((guess) => cleanWord(guess))
+      .includes(cleanWord(solution))
+    if (gameWasWon) {
+      setIsGameWon(true)
+    }
+    if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
+      setIsGameLost(true)
+      showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
+        persist: true,
+      })
+    }
+    return loaded.guesses
   })
 
   const [stats, setStats] = useState(() => loadStats())
@@ -156,7 +162,7 @@ function App() {
         setIsStatsModalOpen={setIsStatsModalOpen}
         setIsSettingsModalOpen={setIsSettingsModalOpen}
       />
-      <div className="pt-2 px-1 pb-8 md:max-w-7xl w-2/3 mx-auto sm:px-6 lg:px-8 flex flex-col grow">
+      <div className="pt-2 px-1 pb-8 md:max-w-4xl w-10/12 mx-auto sm:px-6 lg:px-8 flex flex-col grow">
         {filmTitle ? (
           <FrameContainer
             isFinished={isGameWon || isGameLost}
@@ -164,7 +170,7 @@ function App() {
             numGuesses={guesses.length}
           />
         ) : null}
-        <div className="pb-6 grow">
+        <div className="pb-6">
           <Grid guesses={guesses} />
         </div>
         <FilmInput

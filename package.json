@@ -1,5 +1,6 @@
 {
-  "name": "game",
+  "name": "cinemadle",
+  "homepage": "http://cinemadle.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

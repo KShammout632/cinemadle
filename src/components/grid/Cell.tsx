@@ -15,7 +15,7 @@ export const Cell = ({ value, status, isCompleted }: Props) => {
   const isHighContrast = getStoredIsHighContrastMode()
 
   const classes = classnames(
-    'w-full h-12 border-solid border-2 flex items-center justify-center mx-0.5 text-4xl font-bold rounded dark:text-white',
+    'w-full h-12 border-solid mb-1 border-2 flex items-center justify-center mx-0.5 text-4xl font-bold rounded dark:text-white',
     {
       'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-600':
         !status,
@@ -36,7 +36,7 @@ export const Cell = ({ value, status, isCompleted }: Props) => {
 
   return (
     <div className={classes} style={{ animationDelay }}>
-      <div className="letter-container" style={{ animationDelay }}>
+      <div className="letter-container truncate" style={{ animationDelay }}>
         {value}
       </div>
     </div>
