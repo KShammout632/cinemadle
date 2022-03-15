@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Autosuggest from 'react-autosuggest'
-import { FILMS } from '../../constants/filmlist'
+import { ALL_FILMS } from '../../constants/filmlist'
 import { cleanWord } from '../../lib/words'
 
 type Props = {
@@ -24,7 +24,7 @@ export const FilmInput = ({
 
     return inputLength === 0
       ? []
-      : FILMS.filter(
+      : ALL_FILMS.filter(
           (film) => cleanWord(film).slice(0, inputLength) === inputValue
         ).sort()
   }
