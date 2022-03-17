@@ -1,5 +1,4 @@
 import { UAParser } from 'ua-parser-js'
-import { MAX_CHALLENGES } from '../constants/settings'
 import { GAME_TITLE } from '../constants/strings'
 import { getGuessStatus } from './statuses'
 import { solutionIndex } from './words'
