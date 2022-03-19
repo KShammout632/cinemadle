@@ -24,9 +24,9 @@ export const FilmInput = ({
 
     return inputLength === 0
       ? []
-      : ALL_FILMS.filter(
-          (film) => cleanWord(film).slice(0, inputLength) === inputValue
-        ).sort()
+      : ALL_FILMS.filter((film) => cleanWord(film).includes(inputValue))
+          .slice(0, 15)
+          .sort()
   }
 
   const onSuggestionsFetchRequested = ({ value }: any) => {
