@@ -1,5 +1,6 @@
 import { FILMS } from '../constants/filmlist'
 import { VALID_GUESSES } from '../constants/validGuesses'
+import dayjs from 'dayjs'
 
 export const isWordInWordList = (word: string) => {
   return (
@@ -36,11 +37,14 @@ export const localeAwareUpperCase = (text: string) => {
 }
 
 export const getWordOfDay = () => {
-  const epochMs = new Date(2022, 2, 12).valueOf()
+  // const epochMs = new Date(2022, 2, 12).valueOf()
+  const startDate = dayjs(new Date(2022, 2, 12))
+  const today = dayjs(new Date().setHours(0, 0, 0, 0))
+  const index = today.diff(startDate, 'day')
   const midnightToday = new Date().setHours(0, 0, 0, 0)
   const msInDay = 86400000
   const nextDay = midnightToday + msInDay
-  const index = Math.floor((nextDay - epochMs) / msInDay)
+  // const index = Math.floor((nextDay - epochMs) / msInDay)
 
   return {
     solution: localeAwareUpperCase(FILMS[index % FILMS.length]),
