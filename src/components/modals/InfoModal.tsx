@@ -10,7 +10,7 @@ export const InfoModal = ({ isOpen, handleClose }: Props) => {
   return (
     <BaseModal title="How to play" isOpen={isOpen} handleClose={handleClose}>
       <p className="text-sm text-gray-500 dark:text-gray-300">
-        Inspired by Wordle, try to guess the movie in 6 tries. A new frame from
+        Try to guess the movie in 6 tries. A new frame from
         the film will display after each incorrect guess.
       </p>
 
