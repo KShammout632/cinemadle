@@ -1,5 +1,4 @@
 # Cinemadle
 
 This project is forked off Reactle. Made using React, Typescript, and Tailwind.
-
-[**Try it out!**](https://cinemadle.com/)
+Not live anymore, but feel free to run it locally!
